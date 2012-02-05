@@ -1,15 +1,13 @@
 require 'spec_helper'
 
 def assert(start, finish, text)
-  Periods::Parser[text].map(&:to_i).should eq([ start.to_i, finish.to_i ])
+  parsed = Periods::Parser[text].parse
+  parsed.first.to_i.should == start.to_i
+  parsed.second.to_i.should == finish.to_i
 end
 
 describe Periods::Parser do
   it "should know what you're talking about" do
-    Periods::Parser['2 days ago'].class.should == Time
-    Periods::Parser['2 days ago'].to_i.should  == Time.now.ago(2.days).to_i
-    Periods::Parser['20 days ago'].to_i.should == Time.now.ago(20.days).to_i
-
     assert \
       Time.now.ago(2.days).beginning_of_day,
       Time.now.ago(2.days).end_of_day,
@@ -84,8 +82,6 @@ describe Periods::Parser do
       Time.now.ago(1.month).end_of_month,
       'last month'
 
-    pending('')
-
     assert \
       Time.now.ago(1.week).beginning_of_week,
       Time.now.ago(1.week).end_of_week,
@@ -114,8 +110,6 @@ describe Periods::Parser do
       Time.now.ago(3.month).beginning_of_month,
       Time.now.ago(1.month).end_of_month,
       'last 3 months'
-
-    pending('')
 
     assert \
       Time.now.in(1.year).beginning_of_year,
@@ -148,6 +142,12 @@ describe Periods::Parser do
       Time.now.yesterday.beginning_of_day,
       Time.now.yesterday.end_of_day,
       'yESterdaY'
+  end
+
+  it "should raise error if the expression given doesnt make sense" do
+    lambda {
+      Periods::Parser['this is silly input'].parse
+    }.should raise_error(Periods::TextParsingError)
   end
 end
 

@@ -1,80 +1,67 @@
 require 'spec_helper'
 
-class AddUpdatedOn < ActiveRecord::Migration
-  def self.up
-    add_column Product.arel_table.name, :updated_on, :datetime
+describe 'Submodels and STI' do
+  before(:all) do
+    class Regular < User
+      has_time_span_scopes :last_purchase_on
+    end
+
+    class Customer < User
+      has_time_span_scopes :first_purchase_on
+    end
   end
 
-  def self.down
-    remove_column Product.arel_table.name, :updated_on
-  end
-end
-
-class RemoveCreatedAt < ActiveRecord::Migration
-  def self.up
-    remove_column Product.arel_table.name, :created_at
-  end
-
-  def self.down
-    add_column Product.arel_table.name, :created_at, :datetime
-  end
-end
-
-describe do
   before(:each) do
-    AddUpdatedOn.up
-    Product.reset_column_information
+    @registered_on     = Time.now - 3.days
+    @first_purchase_on = Time.now - 2.days
+    @last_purchase_on  = Time.now - 1.days
+
+    Factory(:regular,  :last_purchase_on  => @last_purchase_on)
+    Factory(:customer, :first_purchase_on => @first_purchase_on)
+    Factory(:user,     :registered_on     => @registered_on)
   end
 
-  after(:each) do
-    AddUpdatedOn.down
-    Product.reset_column_information
-  end
+  it 'should let subclasses span on their own fields' do
+    Regular.span("the day #{@last_purchase_on}").size.should == 1
+    Customer.span("the day #{@last_purchase_on}").size.should == 0
+    User.span("the day #{@last_purchase_on}").size.should == 0
 
-  it 'should default to created_on prior to updated_at column' do
-    created = Time.now - 2.days
-    updated = created + 1.day
-    Factory(:product, :created_at => created, :updated_on => updated)
-    Product.span("the day #{created}").size.should == 1
-    Product.span("the day #{updated}").size.should == 0
+    Customer.span("the day #{@first_purchase_on}").size.should == 1
+    Regular.span("the day #{@first_purchase_on}").size.should == 0
+    User.span("the day #{@first_purchase_on}").size.should == 0
+
+    User.span("the day #{@registered_on}").size.should == 1
+    Customer.span("the day #{@registered_on}").size.should == 0
+    Regular.span("the day #{@registered_on}").size.should == 0
   end
 end
 
-describe do
-  before(:each) do
-    AddUpdatedOn.up
-    RemoveCreatedAt.up
-    Product.reset_column_information
-  end
+describe 'Scope names' do
+  it 'customizing scope names is optional' do
+    class Admin < ActiveRecord::Base
+      has_time_span_scopes :last_purchase_on, :scope_name => :timespan
+    end
 
-  after(:each) do
-    RemoveCreatedAt.down
-    AddUpdatedOn.down
-    Product.reset_column_information
-  end
-
-  it 'should default to updated_on if theres no created_at' do
-    updated = Time.now - 1.day
-    Factory(:product, :updated_on => updated)
-    Product.span("the day #{updated - 1.day}").size.should == 0
-    Product.span("the day #{updated}").size.should == 1
+    Admin.respond_to?(:timespan).should be_true
+    Admin.respond_to?(:span).should be_false
   end
 end
 
-describe do
-  it "raises an error if no appropriate field is there" do
-    lambda {
-      class Customer < ActiveRecord::Base
-        has_time_span_scopes
-      end
-    }.should raise_error(Periods::NoColumnGiven)
-  end
+describe 'OptionalScopes' do
+  it 'optionally adds additional scopes' do
+    class Admin < ActiveRecord::Base
+      has_time_span_scopes :last_purchase_on, :scope_name => :timespan, :with_all_scopes => true
+    end
 
-  it "shouldnt raise error if coumn is given" do
-    lambda {
-      class Customer < ActiveRecord::Base
-        has_time_span_scopes :registered_on
-      end
-    }.should_not raise_error
+    Admin.respond_to?(:last_month).should be_true
+    Admin.respond_to?(:this_month).should be_true
+    Admin.respond_to?(:next_month).should be_true
+    Admin.respond_to?(:this_week).should be_true
+    Admin.respond_to?(:today).should be_true
+    Admin.respond_to?(:yesterday).should be_true
+    Admin.respond_to?(:tomorrow).should be_true
+    Admin.respond_to?(:last_year).should be_true
+    Admin.respond_to?(:this_quarter).should be_true
   end
 end
+

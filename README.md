@@ -1,22 +1,40 @@
 *** Introduction
 
 Periods gem adds scopes to your `ActiveRecord` models that let you make time span queries
-much easier. Take a look:
+much easier. Lets say it's Christams today, take a look:
 
     ```ruby
     class Order < ActiveRecord::Base
       has_time_span_scopes
     end
 
-    Order.span('yesterday') # WHERE (`orders`.`created_at` >= '2011-12-27 00:00:00') AND (`orders`.`created_at` < '2011-12-27 23:59:59')
-    Order.span('the day 3 days ago') # WHERE (`orders`.`created_at` >= '2011-12-27 00:00:00') AND (`orders`.`created_at` < '2011-12-27 23:59:59')
-    Order.span('this month') # WHERE (`orders`.`created_at` >= '2011-12-27 00:00:00') AND (`orders`.`created_at` < '2011-12-27 23:59:59')
+    Order.span('yesterday')
+    # WHERE (`orders`.`created_at` >= '2011-12-23 00:00:00') AND (`orders`.`created_at` < '2011-12-23 23:59:59')
+
+    Order.span('the day 3 days ago')
+    # WHERE (`orders`.`created_at` >= '2011-12-20 00:00:00') AND (`orders`.`created_at` < '2011-12-20 23:59:59')
+
+    Order.span('this month')
+    # WHERE (`orders`.`created_at` >= '2011-12-01 00:00:00') AND (`orders`.`created_at` < '2011-12-27 23:59:59')
 
     ```
 
+*** Usage
+
+You can use these language structures to describe time scopes with `Periods`
+
+'the day 5 days ago'
+'the week 5 weeks ago'
+'the week 5 months ago'
+'from 21/12/2012 until 23/12/2012'
+'last week'
+
+*** Complete (and short) list of features
+
 `created_at`, `created_on`, `updated_at`, `updated_on` are in that order the
-default attributes, which would be scoped on. If those aren't found and no other field is set
-`Order.span('yesterday')` would simply return `scoped` (no change to the query).
+default attributes, which would be scoped on. If those aren't found and no
+other field is set `Order.span('yesterday')` would simply return `scoped`
+(no change to the query).
 
 To change the default attributes:
 
@@ -26,7 +44,7 @@ To change the default attributes:
     end
     ```
 
-In this case if no `:manufactured_on` field is found, a `Periods::AttributeNotFound`
+In this case if no `:manufactured_on` field is found, a `Periods::NoColumnGiven`
 error would be raised.
 
 Furthermore you can do more complicated time-scoping on more than one attribute.
@@ -80,13 +98,13 @@ Furthermore you can configure the scope name using:
     Order.period('last week')
     ```
 
-*** Helper methods
+*** Optional Scopes
 
-For yet further flexibility the following helper methods could be included:
+Further flexibility could be gained by including these optional scopes:
 
     ```ruby
     class Order < ActiveRecord::Base
-      has_time_span_scopes :confirmed_on, :create_helpers => true
+      has_time_span_scopes :confirmed_on, :with_all_scopes => true
     end
 
     Order.yesterday
@@ -97,12 +115,13 @@ For yet further flexibility the following helper methods could be included:
     Order.next_week
 
     # The last three have respective variations for:
-    # :minute, :hour, :day, :week, :fortnight, :month, :quarter, :year
+    # :minute, :hour, :day, :week, :month, :year
     # Eg. Order.last_year, etc.
     ```
 
-Those methods return scopes themselves, so you can chain on them:
+And since those return `ActiveRecord::Relation` themselves, you can chain on:
 
     ```ruby
     Order.yesterday.where(:city => 'Berlin')
     ```
+

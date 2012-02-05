@@ -1,37 +1,27 @@
-module ActiveRecord
-  module Periods
-    module Has
-      def self.included(base)
-        base.class_eval do
-          def self.has_time_span_scopes(column = nil, opts = {})
-            column =
-              if column.nil?
-                columns = self.columns.map(&:name)
-                supported = [
-                  'created_at',
-                  'created_on',
-                  'updated_at',
-                  'updated_on'
-                ]
-                found = supported.select do |c|
-                  columns.include?(c)
-                end
-                found.any? && found.first || raise(::Periods::NoColumnGiven)
-              else
-                column
-              end
+module Periods
+  module Extension
+    def self.included(base)
+      base.extend ClassMethods
+    end
 
-            self.class_variable_set("@@periods_field", column.to_sym)
+    module ClassMethods
+      def has_time_span_scopes(*args)
+        opts = args.extract_options!
+          class_attribute :periods_has_time_span_scopes_column, :periods_default_scope_name,
+          :instance_writer => false, :instance_reader => false
 
-            self.class_eval do
-              include ::Periods::Scopes
-            end
-          end
-        end
+        column = args.pop || ::Periods::ServiceHelpers.fallback_column(self)
+        self.periods_has_time_span_scopes_column = column
+
+        scope_name = (opts[:scope_name] || :span).to_sym
+        self.periods_default_scope_name = scope_name
+
+        include ::Periods::DefaultScopes
+        include ::Periods::OptionalScopes if opts[:with_all_scopes]
       end
     end
   end
 end
 
-ActiveRecord::Base.send(:include, ActiveRecord::Periods::Has)
+ActiveRecord::Base.send(:include, Periods::Extension)
 

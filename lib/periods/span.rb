@@ -10,13 +10,20 @@ module Periods
         if args.size == 2 && args.all? { |a| a.kind_of?(Time) }
           [ args.first, args.last ]
         elsif (text = args.first).kind_of?(String)
-          parsed = Parser[text]
-          [ parsed.first, parsed.last ]
+          Parser[text].parse
         end
     end
 
     class << self
       alias :[] :new
+    end
+
+    def finite?
+      ! infinite?
+    end
+
+    def infinite?
+      @beginning == MINUS_INFINITY || @end == INFINITY
     end
 
     def overlap?(other)

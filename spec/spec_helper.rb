@@ -1,5 +1,6 @@
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
+require 'pry'
 require 'active_record'
 require 'sqlite3'
 
@@ -18,9 +19,12 @@ ActiveRecord::Base.connection.create_table :products, :force => true do |t|
   t.string   :name
 end
 
-ActiveRecord::Base.connection.create_table :customers, :force => true do |t|
-  t.integer :id
+ActiveRecord::Base.connection.create_table :users, :force => true do |t|
+  t.integer  :id
   t.datetime :registered_on
+  t.datetime :first_purchase_on
+  t.datetime :last_purchase_on
+  t.string   :type
 end
 
 require 'periods'
@@ -36,12 +40,25 @@ class Product < ActiveRecord::Base
   has_time_span_scopes
 end
 
+class User < ActiveRecord::Base
+  has_time_span_scopes :registered_on
+end
+
 FactoryGirl.define do
   factory :product do
     name 'The business'
   end
 
-  factory :order do
+  factory :order
+
+  factory :user
+
+  factory :customer do
+    type 'Customer'
+  end
+
+  factory :regular do
+    type 'Regular'
   end
 end
 

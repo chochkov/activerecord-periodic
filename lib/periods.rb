@@ -1,5 +1,7 @@
 require 'chronic'
 require 'active_record'
+require 'periods/constants'
+require 'periods/service_helpers'
 require 'periods/scopes'
 require 'periods/extension'
 require 'periods/parser'

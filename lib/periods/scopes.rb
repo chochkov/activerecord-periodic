@@ -1,28 +1,78 @@
 module Periods
-  module Scopes
-    def self.included(base)
-      base.class_eval do
-        scope :span, lambda { |*args|
-          if args.first.kind_of? Hash
-            args.first.inject(scoped) do |memo, pair|
-              span = ::Periods::Span[pair.last]
 
-              field = pair.first.class_variable_get("@@periods_field")
+  # The scopes from this module get included if `has_time_span_scopes`
+  # gets called in an ActiveRecord model like:
+  #
+  #   Visit < ActiveRecord::Base
+  #     has_time_span_scopes
+  #   end
+  #
+  module DefaultScopes
+    def self.included(klass)
+      default_scope_name = klass.periods_default_scope_name
 
-              memo.where(pair.first.arel_table[field].gteq(span.beginning.to_s(:db))).
-                where(pair.first.arel_table[field].lt(span.end.to_s(:db)))
+      if klass.respond_to?(default_scope_name)
+        klass.singleton_class.class_eval do
+          undef_method(default_scope_name)
+        end
+      end
+
+      klass.scope default_scope_name, lambda { |*args|
+        if args.first.kind_of?(Hash)
+          args.first.inject(klass.scoped) do |memo, pair|
+            span = ::Periods::Span[pair.last]
+
+            if span.finite?
+              column = pair.first.periods_has_time_span_scopes_column
+
+              memo.where(pair.first.arel_table[column].gteq(span.beginning.to_s(:db))).
+                where(pair.first.arel_table[column].lt(span.end.to_s(:db)))
+            else
+              memo
             end
-
-          elsif args.first.kind_of?(String) && args.last.kind_of?(Hash)
-            self.span(args.last.merge({ self => args.first }))
-
-          elsif args.first.kind_of? String
-            self.span(self => args.first)
-
-          else
-            raise ArgumentError.new "Use: .span(String), .span(Hash) or .span(String, Hash). Given: #{args.inspect}"
           end
-        }
+
+        elsif args.first.kind_of?(String) && args.last.kind_of?(Hash)
+          klass.send(default_scope_name, args.last.merge({ klass => args.first }))
+
+        elsif args.first.kind_of?(String)
+          klass.send(default_scope_name, klass => args.first)
+
+        else
+          raise ArgumentError.new <<-ERROR
+            Expected: String, Hash or [ String, Hash ]. Got: #{args.inspect}"
+          ERROR
+        end
+      }
+    end
+  end
+
+  # If `:with_all_scopes => true` option is passed when including the extension like:
+  #
+  #   Visit < ActiveRecord::Base
+  #     has_time_span_scopes :with_all_scopes => true
+  #   end
+  #
+  #   Visit.today
+  #   Visit.tomorrow
+  #   Visit.last_month
+  #   Visit.this_year
+  #   Visit.next_week
+  #
+  # etc. become valid scopes serving as chainable shortcuts.
+  #
+  module OptionalScopes
+    def self.included(klass)
+      %w(year quarter month week day).each do |period|
+        %w(last this next).each do |pointer|
+          name = "#{pointer}_#{period}"
+          text = "#{pointer} #{period}"
+          klass.scope name, klass.send(klass.periods_default_scope_name, text)
+        end
+      end
+
+      %w(yesterday today tomorrow).each do |day|
+        klass.scope day, klass.send(klass.periods_default_scope_name, day)
       end
     end
   end

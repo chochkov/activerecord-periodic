@@ -10,11 +10,6 @@ describe 'Simple Scoping' do
     Order.span('the day 1 day ago').size.should == 0
     Order.span('the day 2 day ago').size.should == 1
   end
-
-  it ".until should returns everything found before given date" do
-    Order.until('1 hour ago').size.should == 1
-    Order.until('10 days ago').size.should == 0
-  end
 end
 
 describe 'Scoping with joins' do
@@ -52,9 +47,13 @@ describe 'Scoping with joins' do
 
   it "should allow flexibility in calling" do
     Product.joins(:orders).span({
-      Product => 'the day 3 weeks ago',
-      Order   => '3 weeks ago'
-    }).to_a.should == Product.joins(:orders).span('the day 3 weeks ago', Order => '3 weeks ago').to_a
+      Product => 'the day 4 weeks ago',
+      Order   => 'the week 3 weeks ago'
+    }).to_a.should ==
+      Product.joins(:orders).span(
+        'the day 4 weeks ago',
+        Order => 'the week 3 weeks ago'
+      ).to_a
   end
 
   it "should return full scope if given 'full' or 'all'" do
