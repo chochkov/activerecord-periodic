@@ -58,7 +58,7 @@ module Periods
     end
 
     def last?
-      regex = /^(the)?((last)|(next))(\d+)*((day)|(week)|(month)|(quarter)|(year))s?$/
+      regex = /^(the)?((last)|(next))(\d+)*((day)|(week)|(month)|(year))s?$/
 
       !!
       text.gsub(/\s/, '').match(regex) do
@@ -80,7 +80,7 @@ module Periods
 
     def this?
       !!
-      text.match(/^this ((day)|(week)|(month)|(quarter)|(year))$/) do
+      text.match(/^this ((day)|(week)|(month)|(year))$/) do
         current_time = Time.now
         @parsed = [
           current_time.send("beginning_of_#{$1}"),

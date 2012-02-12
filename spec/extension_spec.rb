@@ -61,7 +61,6 @@ describe 'OptionalScopes' do
     Admin.respond_to?(:yesterday).should be_true
     Admin.respond_to?(:tomorrow).should be_true
     Admin.respond_to?(:last_year).should be_true
-    Admin.respond_to?(:this_quarter).should be_true
   end
 end
 

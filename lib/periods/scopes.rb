@@ -63,7 +63,7 @@ module Periods
   #
   module OptionalScopes
     def self.included(klass)
-      %w(year quarter month week day).each do |period|
+      %w(year month week day).each do |period|
         %w(last this next).each do |pointer|
           name = "#{pointer}_#{period}"
           text = "#{pointer} #{period}"
