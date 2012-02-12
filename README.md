@@ -1,3 +1,5 @@
+https://secure.travis-ci.org/chochkov/Periods.png
+
 *** Introduction
 
 Periods gem adds scopes to your `ActiveRecord` models that let you make time span queries
