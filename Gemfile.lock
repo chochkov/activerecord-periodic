@@ -35,6 +35,7 @@ GEM
     pry-doc (0.4.0)
       pry (>= 0.9.0)
       yard (~> 0.7.4)
+    rake (0.8.7)
     rspec (2.8.0)
       rspec-core (~> 2.8.0)
       rspec-expectations (~> 2.8.0)
@@ -59,5 +60,6 @@ DEPENDENCIES
   guard-rspec
   pry
   pry-doc
+  rake
   rspec
   sqlite3
