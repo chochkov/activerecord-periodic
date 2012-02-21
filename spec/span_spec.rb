@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-include Periods
+include ActiveRecordPeriodic
 
 describe Span do
   before(:each) do
