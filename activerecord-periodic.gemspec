@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 $:.push File.expand_path("../lib", __FILE__)
-require "activerecord_periodic/version"
+require "activerecord-periodic/version"
 
 Gem::Specification.new do |s|
   s.name        = "activerecord-periodic"
