@@ -26,7 +26,7 @@ ActiveRecord::Base.connection.create_table :users, :force => true do |t|
   t.string   :type
 end
 
-require 'active_record_periodic'
+require 'activerecord_periodic'
 require 'factory_girl'
 
 class Order < ActiveRecord::Base

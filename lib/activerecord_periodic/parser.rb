@@ -1,4 +1,4 @@
-module Periods
+module ActiveRecord::Periodic
   class Parser
     attr_accessor :text
 

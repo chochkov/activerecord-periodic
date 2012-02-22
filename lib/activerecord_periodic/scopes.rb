@@ -1,4 +1,4 @@
-module Periods
+module ActiveRecord::Periodic
 
   # The scopes from this module get included if `has_time_span_scopes`
   # gets called in an ActiveRecord model like:
@@ -20,7 +20,7 @@ module Periods
       klass.scope default_scope_name, lambda { |*args|
         if args.first.kind_of?(Hash)
           args.first.inject(klass.scoped) do |memo, pair|
-            span = ::Periods::Span[pair.last]
+            span = ::ActiveRecord::Periodic::Span[pair.last]
 
             if span.finite?
               column = pair.first.periods_has_time_span_scopes_column

@@ -1,4 +1,5 @@
-[![Build Status](https://secure.travis-ci.org/[YOUR_GITHUB_USERNAME]/[YOUR_PROJECT_NAME].png)](https://secure.travis-ci.org/chochkov/Periods.png)
+[![Build
+Status](https://secure.travis-ci.org/chochkov/active_record_periodic.png)](https://secure.travis-ci.org/chochkov/active_record_periodic.png)
 
 *** Introduction
 

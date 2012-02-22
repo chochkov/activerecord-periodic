@@ -1,12 +1,12 @@
 require 'spec_helper'
 
 def assert(start, finish, text)
-  parsed = Periods::Parser[text].parse
+  parsed = ActiveRecord::Periodic::Parser[text].parse
   parsed.first.to_i.should == start.to_i
   parsed.second.to_i.should == finish.to_i
 end
 
-describe Periods::Parser do
+describe ActiveRecord::Periodic::Parser do
   it "should know what you're talking about" do
     assert \
       Time.now.ago(2.days).beginning_of_day,
@@ -146,8 +146,8 @@ describe Periods::Parser do
 
   it "should raise error if the expression given doesnt make sense" do
     lambda {
-      Periods::Parser['this is silly input'].parse
-    }.should raise_error(Periods::TextParsingError)
+      ActiveRecord::Periodic::Parser['this is silly input'].parse
+    }.should raise_error(ActiveRecord::Periodic::TextParsingError)
   end
 end
 

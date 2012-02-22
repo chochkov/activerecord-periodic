@@ -6,7 +6,7 @@ end
 
 class Model; end
 
-include Periods
+include ActiveRecord::Periodic
 
 describe '.fallback_column' do
   before(:each) do

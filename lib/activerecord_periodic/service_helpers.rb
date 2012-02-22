@@ -1,4 +1,4 @@
-module Periods
+module ActiveRecord::Periodic
   class ServiceHelpers
     # Given an ActiveRecord::Base subclass @param klass
     # return a default Datetime column to span on

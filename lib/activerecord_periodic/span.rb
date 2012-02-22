@@ -1,4 +1,4 @@
-module Periods
+module ActiveRecord::Periodic
   class Span
     include Comparable # by length
     attr_accessor :beginning, :end
