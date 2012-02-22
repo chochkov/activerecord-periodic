@@ -3,8 +3,8 @@ $:.push File.expand_path("../lib", __FILE__)
 require "activerecord_periodic/version"
 
 Gem::Specification.new do |s|
-  s.name        = "periods"
-  s.version     = ActiveRecordPeriodic::VERSION
+  s.name        = "activerecord-periodic"
+  s.version     = VERSION
   s.authors     = ["nikola chochkov"]
   s.email       = ["nikola@howkul.info"]
   s.homepage    = ""
