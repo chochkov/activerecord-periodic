@@ -41,27 +41,60 @@ describe Span do
     Span['today'].should_not === Span['yesterday']
   end
 
-  it "#per should yield span breakdown per aggregate" do
-    Span['this week'].per(:day) do |day|
-      day.kind_of?(Span).should be_true
-      day.length.should == 1.day
-    end.should == 7
-  end
-
-  it "#days, etc. should shortcut per(:day) with no block" do
-    period = 'last week'
-    Span[period].per(:day).should == Span[period].days
-  end
-
-  it "#per should return an array if no block given" do
-    days = Span['this week'].per(:day)
-    days.map(&:class).uniq.should == [ Span ]
-    days.size.should == 7
-  end
-
   it "#disjoint? tells if two spans have no overlap" do
     Span['today'].disjoint?(Span['yesterday']).should be_true
     Span['today'].disjoint?(Span['this week']).should_not be_true
   end
-end
 
+  it "#include? should tell if a Time object is included in the span" do
+    t = Time.now - 1.week
+    Span['last week'].inside?(t).should be_true
+  end
+
+  describe 'Subperiods breakdown' do
+    it "#per should yield span breakdown per aggregate" do
+      Span['this week'].per(:day) do |day|
+        day.should be_kind_of(Span)
+        day.length.should == 1.day
+      end.should == 7
+    end
+
+    it "#days, etc. should shortcut per(:day) with no block" do
+      period = 'last week'
+      Span[period].per(:day).should == Span[period].days
+    end
+
+    it "#per should return an array if no block given" do
+      days = Span['this week'].per(:day)
+      days.each { |d| d.should be_kind_of(Span) }
+      days.size.should == 7
+    end
+
+    it "#daily yields days" do
+      Span['the month 2012 February'].daily do |day|
+        day.should be_kind_of(Span)
+        day.length.should == 1.day
+      end.should == 29
+    end
+
+    it "#weekly yields weeks" do
+      Span['the month 2012 February'].weekly do |week|
+        week.should be_kind_of(Span)
+        week.length.should == 1.week
+      end.should == 5
+    end
+
+    it "#weekly yields only complete weeks if strict is true" do
+      Span['the month 2012 February'].weekly(true) do |week|
+        week.should be_kind_of(Span)
+        week.length.should == 1.week
+      end.should == 3
+    end
+
+    it "#monthly yields months" do
+      Span['the year 2012'].monthly do |month|
+        month.should be_kind_of(Span)
+      end.should == 12
+    end
+  end
+end
