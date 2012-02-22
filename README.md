@@ -1,5 +1,5 @@
 [![Build
-Status](https://secure.travis-ci.org/chochkov/active_record_periodic.png)](https://secure.travis-ci.org/chochkov/active_record_periodic.png)
+Status](https://secure.travis-ci.org/chochkov/activerecord-periodic.png)](https://secure.travis-ci.org/chochkov/activerecord-periodic.png)
 
 *** Introduction
 
