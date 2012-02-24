@@ -30,11 +30,10 @@ describe '.fallback_column' do
     ServiceHelpers.fallback_column(Model).should == 'created_at'
   end
 
-  it 'should raise error if no suitable column is given or found' do
+  it 'should be silent if no suitable column is given or found' do
     columns [ 'something_else' ]
     lambda {
       ServiceHelpers.fallback_column(Model)
-    }.should raise_error(NoColumnGiven)
+    }.should_not raise_error
   end
 end
-

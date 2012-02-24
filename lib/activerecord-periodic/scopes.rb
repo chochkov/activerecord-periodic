@@ -23,7 +23,9 @@ module ActiveRecord::Periodic
             span = ::ActiveRecord::Periodic::Span[pair.last]
 
             if span.finite?
-              column = pair.first.periods_has_time_span_scopes_column
+
+              column = pair.first.periods_has_time_span_scopes_column ||
+                raise(::ActiveRecord::Periodic::NoColumnGiven)
 
               memo.where(pair.first.arel_table[column].gteq(span.beginning.to_s(:db))).
                 where(pair.first.arel_table[column].lt(span.end.to_s(:db)))

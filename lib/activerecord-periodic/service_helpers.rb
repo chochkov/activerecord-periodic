@@ -3,7 +3,8 @@ module ActiveRecord::Periodic
     # Given an ActiveRecord::Base subclass @param klass
     # return a default Datetime column to span on
     def self.fallback_column(klass)
-      columns  = klass.columns.map(&:name)
+      # if there's no column, be quiet at this stage
+      columns  = klass.columns.map(&:name) rescue []
       expected = [
         'created_at',
         'created_on',
@@ -11,8 +12,7 @@ module ActiveRecord::Periodic
         'updated_on'
       ]
       column = expected.select { |c| columns.include?(c) }.first
-      column || raise(NoColumnGiven)
+      column
     end
   end
 end
-
