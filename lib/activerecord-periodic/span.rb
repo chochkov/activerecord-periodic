@@ -19,7 +19,7 @@
 module ActiveRecord::Periodic
   class Span
     include Comparable # by length
-    attr_accessor :beginning, :end
+    attr_accessor :beginning, :end, :group_by
 
     def initialize(*args)
       args = args.flatten
@@ -28,12 +28,18 @@ module ActiveRecord::Periodic
         if args.size == 2 && args.all? { |a| a.kind_of?(Time) }
           [ args.first, args.last ]
         elsif (text = args.first).kind_of?(String)
-          Parser[text].parse
+          group_by = text.split(/\sgroup\s/i)
+          @group_by = group_by[1]
+          Parser[group_by.first].parse
         end
     end
 
     class << self
       alias :[] :new
+    end
+
+    def grouping?
+      !! group_by
     end
 
     # if the span is finite or not
