@@ -22,7 +22,8 @@ Order.span('this month')
 # WHERE (`orders`.`created_at` >= '2011-12-01 00:00:00') AND (`orders`.`created_at` < '2011-12-27 23:59:59')
 ```
 
-*** Usage
+Usage
+-------
 
 You can use these language structures to describe time scopes with `Periods`
 
@@ -32,7 +33,8 @@ You can use these language structures to describe time scopes with `Periods`
 'from 21/12/2012 until 23/12/2012'
 'last week'
 
-*** Complete (and short) list of features
+Complete (and short) list of features
+-------
 
 `created_at`, `created_on`, `updated_at`, `updated_on` are in that order the
 default attributes, which would be scoped on. If those aren't found and no
@@ -100,7 +102,8 @@ end
 Order.period('last week')
 ```
 
-*** Optional Scopes
+Optional Scopes
+-------
 
 Further flexibility could be gained by including these optional scopes:
 
@@ -126,4 +129,3 @@ And since those return `ActiveRecord::Relation` themselves, you can chain on:
 ```ruby
 Order.yesterday.where(:city => 'Berlin')
 ```
-
