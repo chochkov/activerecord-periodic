@@ -71,21 +71,21 @@ describe Span do
     end
 
     it "#daily yields days" do
-      Span['the month February 2012'].daily do |day|
+      Span['the month 2012 February'].daily do |day|
         day.should be_kind_of(Span)
         day.length.should == 1.day
       end.should == 29
     end
 
     it "#weekly yields weeks" do
-      Span['the month February 2012'].weekly do |week|
+      Span['the month 2012 February'].weekly do |week|
         week.should be_kind_of(Span)
         week.length.should == 1.week
       end.should == 5
     end
 
     it "#weekly yields only complete weeks if strict is true" do
-      Span['the month February 2012'].weekly(true) do |week|
+      Span['the month 2012 February'].weekly(true) do |week|
         week.should be_kind_of(Span)
         week.length.should == 1.week
       end.should == 3

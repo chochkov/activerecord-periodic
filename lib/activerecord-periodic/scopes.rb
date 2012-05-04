@@ -27,14 +27,8 @@ module ActiveRecord::Periodic
               column = pair.first.periods_has_time_span_scopes_column ||
                 raise(::ActiveRecord::Periodic::NoColumnGiven)
 
-              memo = memo.where(pair.first.arel_table[column].gteq(span.beginning.to_s(:db))).
+              memo.where(pair.first.arel_table[column].gteq(span.beginning.to_s(:db))).
                 where(pair.first.arel_table[column].lt(span.end.to_s(:db)))
-
-              if span.grouping?
-                memo.group("date(#{pair.first.arel_table[column].name})")
-              else
-                memo
-              end
             else
               memo
             end

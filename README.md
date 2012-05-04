@@ -25,21 +25,13 @@ Order.span('this month')
 Usage
 -------
 
-You can use these language structures to describe time scopes with
-`ActiveRecord::Periodic`
+You can use these language structures to describe time scopes with `Periods`
 
 'the day 5 days ago'
 'the week 5 weeks ago'
 'the week 5 months ago'
 'from 21/12/2012 until 23/12/2012'
 'last week'
-
-You can also use grouping to get a Hash of daily counts like so:
-
-```ruby
-Order.span('last week group daily')
-# a Hash like: { '07-02-2012' => 234, '08-02-2012' => 245, ... }
-```
 
 Complete (and short) list of features
 -------

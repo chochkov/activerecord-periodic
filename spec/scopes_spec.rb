@@ -68,12 +68,5 @@ describe 'Scoping with joins' do
     Order.span('full').size.should == 4
     Order.span('today').size.should == 1
   end
-
-  it "should group correctly" do
-    hash = Order.span('from 5 days ago until today group daily').size
-    hash.should be_kind_of(Hash)
-    hash.size.should == 2
-    hash.values.sum.should == 3
-  end
 end
 
