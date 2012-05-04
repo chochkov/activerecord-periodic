@@ -63,4 +63,3 @@ describe 'OptionalScopes' do
     Admin.respond_to?(:last_year).should be_true
   end
 end
-
