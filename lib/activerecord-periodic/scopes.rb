@@ -24,11 +24,18 @@ module ActiveRecord::Periodic
 
             if span.finite?
 
-              column = pair.first.periods_has_time_span_scopes_column ||
-                raise(::ActiveRecord::Periodic::NoColumnGiven)
+              column =
+                if pair.first.kind_of? Class
+                  c = pair.first.periods_has_time_span_scopes_column
+                  pair.first.arel_table[c]
+                elsif pair.first.kind_of? Symbol
+                  klass.arel_table[pair.first]
+                else
+                  raise ::ActiveRecord::Periodic::NoColumnGiven
+                end
 
-              memo.where(pair.first.arel_table[column].gteq(span.beginning.to_s(:db))).
-                where(pair.first.arel_table[column].lt(span.end.to_s(:db)))
+              memo.where(column.gteq(span.beginning.to_s(:db))).
+                where(column.lt(span.end.to_s(:db)))
             else
               memo
             end

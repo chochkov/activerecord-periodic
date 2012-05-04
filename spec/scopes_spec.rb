@@ -70,3 +70,18 @@ describe 'Scoping with joins' do
   end
 end
 
+describe 'Scoping on custom attributes' do
+  before(:each) do
+    @ototooy = Time.now - 2.days
+    Factory(:user, :registered_on => @ototooy)
+    Factory(:user, :registered_on => @ototooy)
+    Factory(:user, :first_purchase_on => @ototooy + 1.day)
+  end
+
+  it "should let you define the DB column on the fly" do
+    expr = "the day #{@ototooy}"
+    User.span(expr).size.should eq 2
+    User.span(:first_purchase_on => "the day #{@ototooy + 1.day}").size.should eq 1
+    User.span(expr, :first_purchase_on => expr).size.should eq 0
+  end
+end
