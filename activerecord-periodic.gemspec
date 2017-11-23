@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.homepage    = ""
   s.licenses    = ["MIT"]
   s.require_paths    = ["lib"]
-  s.rubygems_version = %q{1.7.2}
+  s.rubygems_version = %q{>= 1.7.2}
   s.summary     = %q{Extracts AR scopes related to selecting data from periods}
   s.description = %q{Extracts AR scopes related to selecting data from periods}
 
