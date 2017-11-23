@@ -19,7 +19,7 @@ module ActiveRecord::Periodic
 
       klass.scope default_scope_name, lambda { |*args|
         if args.first.kind_of?(Hash)
-          args.first.inject(klass.scoped) do |memo, pair|
+          args.first.inject(klass.where(nil)) do |memo, pair|
             span = ::ActiveRecord::Periodic::Span[pair.last]
 
             if span.finite?
